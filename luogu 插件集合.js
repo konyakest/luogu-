@@ -30,6 +30,10 @@
 const PASTEID = undefined/*请自行设置，如"eyb488k7"*/;
 const TRAINING_ID = undefined/*请自行设置，如100，**必须是团队作业题单，且您必须有题单的编辑权限***/;
 
+if(typeof PASTEID !== "string" || typeof TRAINING_ID !== "string"){
+    alert("请在代码的第 30 行和第 31 行设置正确的参数！");
+}
+
 function URLmatch(pat){
     return Boolean(window.location.href.match(pat));
 }
