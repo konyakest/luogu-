@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         luogu 插件集合
 // @namespace    http://tampermonkey.net/
-// @version      0.0.3
+// @version      0.0.4
 // @description  非常好的 luogu 插件集合
 // @author       konyakest
 // @license      MIT
@@ -15,6 +15,10 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        GM_xmlhttpRequest
+// @require      https://cdn.jsdelivr.net/npm/marked@latest/marked.min.js
+// @require      https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js
+// @downloadURL https://update.greasyfork.org/scripts/487989/luogu%20%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88.user.js
+// @updateURL https://update.greasyfork.org/scripts/487989/luogu%20%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88.meta.js
 // ==/UserScript==
 
 /*
@@ -27,8 +31,8 @@
 - 显示今日AC
 */
 
-const PASTEID = undefined/*请自行设置，如"eyb488k7"*/;
-const TRAINING_ID = undefined/*请自行设置，如100，**必须是团队作业题单，且您必须有题单的编辑权限***/;
+const PASTEID = undefined/*请自行设置，如 "eyb488k7"*/;
+const TRAINING_ID = undefined/*请自行设置，如 "100"，**必须是团队作业题单，且您必须有题单的编辑权限***/;
 
 if(typeof PASTEID !== "string" || typeof TRAINING_ID !== "string"){
     alert("请在代码的第 30 行和第 31 行设置正确的参数！");
@@ -266,25 +270,11 @@ async function 简要题面(){
         return "";
     }
 
-    async function my_marked(code){
-        if(code === "") return "";
-        let tmp;
-        await GM_xmlhttpRequest({
-            method:'post',
-            url:'http://www.nfls.com.cn:10611/api/markdown',
-            data:"s="+encodeURIComponent(code),
-            headers:{ "Content-Type": "application/x-www-form-urlencoded" },
-            onload:res=>tmp=res.responseText
+    async function my_marked(text){
+        return marked.marked(text).replace(/\$\$(.*?)\$\$|\$(.*?)\$/g, function(match, p1, p2) {
+            const p = p1 || p2;
+            return (new DOMParser()).parseFromString(katex.renderToString(p, {throwOnError: false}),'text/html').body.firstChild.firstChild.innerHTML;
         });
-        async function dfs(dep){
-            await new Promise(resolve=>setTimeout(resolve,500));
-            if(typeof tmp !== 'undefined'){
-                return tmp;
-            }
-            dep === 8? tmp = '网络错误，请刷新重试': await dfs(dep+1);
-        }
-        await dfs(1);
-        return new DOMParser().parseFromString(tmp,"text/html").all[3].innerHTML;
     }
 
     async function addElement(){
@@ -606,49 +596,76 @@ async function 显示今日AC(){
         console.log(name,ans);
     });
 }
-
 if(URLmatch("https://www.luogu.com.cn/problem/*") || URLmatch("https://www.luogu.com.cn/paste/*") || URLmatch("https://www.luogu.com.cn/training/*")){
     try{
-        浏览记录();
-    }catch(e){};
+        浏览记录().catch(e=>{
+            alert("出现了错误"+e+"，小编也不知道怎么解决");
+        });
+    }catch(e){
+        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    };
 }
 
 if(URLmatch("https://www.luogu.com.cn/problem/*") || (URLmatch("https://www.luogu.com.cn/training/*")&&!URLmatch("rank"))){
     try{
-        显示代码长度();
-    }catch(e){};
+        显示代码长度().catch(e=>{
+            alert("出现了错误"+e+"，小编也不知道怎么解决");
+        });
+    }catch(e){
+        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    };
 }
 
 if(URLmatch("https://www.luogu.com.cn/problem/*")){
     try{
-        简要题面();
-    }catch(e){console.log(e);};
+        简要题面().catch(e=>{
+            alert("出现了错误"+e+"，小编也不知道怎么解决");
+        });
+    }catch(e){
+        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    };
 }
 
 if(window.location.href === "https://www.luogu.com.cn/"||URLmatch("https://www.luogu.com.cn/paste/*")){
     try{
-        首页暂存内容();
-    }catch(e){console.log(e);};
+        首页暂存内容().catch(e=>{
+            alert("出现了错误"+e+"，小编也不知道怎么解决");
+        });
+    }catch(e){
+        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    };
 }
 
-if(URLmatch("https://www.luogu.com.cn/problem/*")||!URLmatch("https://www.luogu.com.cn/problem/list")){
+if(URLmatch("https://www.luogu.com.cn/problem/*")&&!URLmatch("https://www.luogu.com.cn/problem/list")){
     try{
-        卷题情况();
-    }catch(e){console.log(e);};
+        卷题情况().catch(e=>{
+            alert("出现了错误"+e+"，小编也不知道怎么解决");
+        });
+    }catch(e){
+        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    };
 }
 
 if(URLmatch("https://www.luogu.com.cn/problem/*")||URLmatch("https://api.loj.ac/")){
     try{
-        测试用例();
-    }catch(e){console.log(e);};
+        测试用例().catch(e=>{
+            alert("出现了错误"+e+"，小编也不知道怎么解决");
+        });
+    }catch(e){
+        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    };
 }
 
 let id = setInterval(function(){
     if(window.location.href.split('/')[3] === "training" && Boolean(window.location.href.split('/')[4].match("#rank"))){
         console.log("123");
         try{
-            显示今日AC();
-        }catch(e){console.log(e);};
+            显示今日AC().catch(e=>{
+                alert("出现了错误"+e+"，小编也不知道怎么解决");
+            });
+        }catch(e){
+            alert("出现了错误"+e+"，小编也不知道怎么解决");
+        };
         clearInterval(id);
     }
 },1000);
