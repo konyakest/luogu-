@@ -1,1 +1,4 @@
-console.log("github!");
+function f(){
+  console.log("github!");
+  console.log(a);
+}
