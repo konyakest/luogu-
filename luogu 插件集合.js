@@ -36,6 +36,10 @@ const PASTEID = "u3mnkre6"/*请自行设置，如"eyb488k7"*/;
 const TRAINING_ID = 441406/*请自行设置，如100，**必须是团队作业题单，且您必须有题单的编辑权限***/;
 const friends = ["SpadeA261", "konyakest", "dayux", "rzh123", "zhjxaoini"];
 
+if (typeof PASTEID !== "string" || typeof TRAINING_ID !== "string") {
+    alert("请在代码的第 30 行和第 31 行设置正确的参数！");
+}
+
 let funcList = {
     hello: async function () { return "Hello, World!"; }
 };
@@ -66,7 +70,7 @@ async function 显示代码长度() {
     */
 
     function getMid(lst) {
-         //console.log(lst);
+        //console.log(lst);
         if (!lst.length) return "2147483647 K";
         return (function (x) {
             if (x < 1024) {
@@ -132,8 +136,8 @@ async function 显示代码长度() {
                 x.forEach(x => x.forEach(x => lst.push(x.sourceCodeLength)));
                 lst.sort((a, b) => a - b);
             });
-        } catch (e) { };
-        // console.log(lst);
+        } catch (e) { console.log(e); };
+        console.log("lst", lst);
         lst.sort((a, b) => a - b);
         let res = getMid(lst);
         if (ENABLE_CACHE) {
@@ -272,14 +276,12 @@ async function 简要题面() {
         JSON.parse(decodeURIComponent(data)).currentData.solutions.result.forEach(x => {
             res.push(x.content.split("\n"));
         });
-        // console.log(res);
         return res;
     }
 
     function getProblemDescr(text) {
         let res = [];
         let pre;
-        // console.log(text);
         try {
             text.forEach(function (x) {
                 if (x.split(" ")[0] === pre) {
@@ -296,7 +298,6 @@ async function 简要题面() {
             if (e === "parse end!") {
                 let str = "";
                 res.forEach(x => str += `> ${x}\n`);
-                // console.log(str);
                 return str;
             }
             throw e;
@@ -311,19 +312,18 @@ async function 简要题面() {
             'amp': '&',
             'quot': '"',
             'nbsp': ' ',
+            '&#39;': '\''
             // 添加其他实体
         };
 
-        return text.replace(/&([^;]+);/g, function (match, entity) {
-            return entities[entity] || match;
-        });
+        for (let i in entities) text = text.replace(i, entities[i]);
+        return text;
     }
 
     async function my_marked(text) {
-        return marked.marked(text).replace(/\$\$(.*?)\$\$|\$(.*?)\$/g, function(match, p1, p2) {
+        return marked.marked(text).replace(/\$\$(.*?)\$\$|\$(.*?)\$/g, function (match, p1, p2) {
             const p = decodeHTMLEntities(p1 || p2);
-            // console.log(p);
-            return (new DOMParser()).parseFromString(katex.renderToString(p, {throwOnError: false}),'text/html').body.firstChild.firstChild.innerHTML;
+            return (new DOMParser()).parseFromString(katex.renderToString(p, { throwOnError: false }), 'text/html').body.firstChild.firstChild.innerHTML;
         });
     }
 
@@ -335,7 +335,7 @@ async function 简要题面() {
         // setTimeout(_=>console.log(window.searchSolutionKeyword,window),2000);
 
         // console.log("add ssk!");
-        funcList.ssk = async function(value){
+        funcList.ssk = async function (value) {
             // console.log(123);
             if (!!solutions.some(x => x.some(xx => xx.match(value)))) {
                 return `恭喜！题解中有关键词"${value}"，快切了此题吧！`;
@@ -351,11 +351,9 @@ async function 简要题面() {
         tmp2.childNodes[0].childNodes[0].innerText = "搜索题解关键词";
         tmp2.onclick = function () {
             let value = prompt("请输入要找的关键词");
-            // console.log(value, value === '', value === null);
             if (value === '' || value === null) {
                 return;
             }
-            // console.log("asd", typeof value);
             if (!!solutions.some(x => x.some(xx => xx.match(value)))) {
                 alert(`恭喜！题解中有关键词"${value}"，快切了此题吧！`);
             }
@@ -615,7 +613,7 @@ async function dfsGetTodayAC(name, page) {
         .then(x => JSON.parse(decodeURIComponent(x)))
         .then(x => x.currentData.records.result)
         .then(x => x.filter(xx => xx.submitTime >= today))
-        .catch(async function(e){
+        .catch(async function (e) {
             await new Promise(resolve => setTimeout(resolve, 500));
             return dfsGetTodayAC(name, page);
         });
@@ -675,7 +673,7 @@ funcList.tdac = async function () {
     let all = "";
     let arr = friends;
     let promiselst = [];
-    for (let i = 0; i < arr.length; i++) promiselst.push(async function(){
+    for (let i = 0; i < arr.length; i++) promiselst.push(async function () {
         let name = arr[i];
         console.log(name);
         let ans = await dfsGetTodayAC(name, 1);
@@ -704,82 +702,82 @@ funcList.tdac = async function () {
     return all;
 };
 
-let alert=console.log;
+let alert = console.log;
 
-if(URLmatch("https://www.luogu.com.cn/problem/*") || URLmatch("https://www.luogu.com.cn/paste/*") || URLmatch("https://www.luogu.com.cn/training/*")){
-    try{
-        浏览记录().catch(e=>{
-            alert("出现了错误"+e+"，小编也不知道怎么解决");
+if (URLmatch("https://www.luogu.com.cn/problem/*") || URLmatch("https://www.luogu.com.cn/paste/*") || URLmatch("https://www.luogu.com.cn/training/*")) {
+    try {
+        浏览记录().catch(e => {
+            alert("出现了错误" + e + "，小编也不知道怎么解决");
         });
-    }catch(e){
-        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    } catch (e) {
+        alert("出现了错误" + e + "，小编也不知道怎么解决");
     };
 }
 
-if(URLmatch("https://www.luogu.com.cn/problem/*") || (URLmatch("https://www.luogu.com.cn/training/*")&&!URLmatch("rank"))){
-    try{
-        显示代码长度().catch(e=>{
-            alert("出现了错误"+e+"，小编也不知道怎么解决");
+if (URLmatch("https://www.luogu.com.cn/problem/*") || (URLmatch("https://www.luogu.com.cn/training/*") && !URLmatch("rank"))) {
+    try {
+        显示代码长度().catch(e => {
+            alert("出现了错误" + e + "，小编也不知道怎么解决");
         });
-    }catch(e){
-        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    } catch (e) {
+        alert("出现了错误" + e + "，小编也不知道怎么解决");
     };
 }
 
-if(URLmatch("https://www.luogu.com.cn/problem/*")){
-    try{
-        简要题面().catch(e=>{
-            alert("出现了错误"+e+"，小编也不知道怎么解决");
+if (URLmatch("https://www.luogu.com.cn/problem/*")) {
+    try {
+        简要题面().catch(e => {
+            alert("出现了错误" + e + "，小编也不知道怎么解决");
         });
-    }catch(e){
-        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    } catch (e) {
+        alert("出现了错误" + e + "，小编也不知道怎么解决");
     };
 }
 
-if(window.location.href === "https://www.luogu.com.cn/"||URLmatch("https://www.luogu.com.cn/paste/*")){
-    try{
-        首页暂存内容().catch(e=>{
-            alert("出现了错误"+e+"，小编也不知道怎么解决");
+if (window.location.href === "https://www.luogu.com.cn/" || URLmatch("https://www.luogu.com.cn/paste/*")) {
+    try {
+        首页暂存内容().catch(e => {
+            alert("出现了错误" + e + "，小编也不知道怎么解决");
         });
-    }catch(e){
-        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    } catch (e) {
+        alert("出现了错误" + e + "，小编也不知道怎么解决");
     };
 }
 
-if(URLmatch("https://www.luogu.com.cn/problem/*")&&!URLmatch("https://www.luogu.com.cn/problem/list")){
-    try{
-        卷题情况().catch(e=>{
-            alert("出现了错误"+e+"，小编也不知道怎么解决");
+if (URLmatch("https://www.luogu.com.cn/problem/*") && !URLmatch("https://www.luogu.com.cn/problem/list")) {
+    try {
+        卷题情况().catch(e => {
+            alert("出现了错误" + e + "，小编也不知道怎么解决");
         });
-    }catch(e){
-        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    } catch (e) {
+        alert("出现了错误" + e + "，小编也不知道怎么解决");
     };
 }
 
-if(URLmatch("https://www.luogu.com.cn/problem/*")||URLmatch("https://api.loj.ac/")){
-    try{
-        测试用例().catch(e=>{
-            alert("出现了错误"+e+"，小编也不知道怎么解决");
+if (URLmatch("https://www.luogu.com.cn/problem/*") || URLmatch("https://api.loj.ac/")) {
+    try {
+        测试用例().catch(e => {
+            alert("出现了错误" + e + "，小编也不知道怎么解决");
         });
-    }catch(e){
-        alert("出现了错误"+e+"，小编也不知道怎么解决");
+    } catch (e) {
+        alert("出现了错误" + e + "，小编也不知道怎么解决");
     };
 }
 
-let id = setInterval(function(){
-    if(window.location.href.split('/')[3] === "training" && Boolean(window.location.href.split('/')[4].match("#rank"))){
+let id = setInterval(function () {
+    if (window.location.href.split('/')[3] === "training" && Boolean(window.location.href.split('/')[4].match("#rank"))) {
         console.log("123");
-        try{
-            显示今日AC().catch(e=>{
-                alert("出现了错误"+e+"，小编也不知道怎么解决");
+        try {
+            显示今日AC().catch(e => {
+                alert("出现了错误" + e + "，小编也不知道怎么解决");
             });
-        }catch(e){
-            alert("出现了错误"+e+"，小编也不知道怎么解决");
+        } catch (e) {
+            alert("出现了错误" + e + "，小编也不知道怎么解决");
         };
         clearInterval(id);
     }
-},1000);
+}, 1000);
 
-try{
+try {
     document.querySelector(".operation").children.forEach(x => x.style.zIndex = 9999);
-}catch(e){alert("出现了错误"+e+"，小编知道怎么解决但不想解决");}
+} catch (e) { alert("出现了错误" + e + "，小编知道怎么解决但不想解决"); }
