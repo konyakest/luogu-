@@ -36,7 +36,7 @@ const PASTEID = "u3mnkre6"/*请自行设置，如"eyb488k7"*/;
 const TRAINING_ID = 441406/*请自行设置，如100，**必须是团队作业题单，且您必须有题单的编辑权限***/;
 const friends = ["SpadeA261", "konyakest", "dayux", "rzh123", "zhjxaoini"];
 
-if (typeof PASTEID !== "string" || typeof TRAINING_ID !== "string") {
+if (typeof PASTEID !== "string" || (typeof TRAINING_ID !== "string" && typeof TRAINING_ID !== "number")) {
     alert("请在代码的第 30 行和第 31 行设置正确的参数！");
 }
 
