@@ -307,6 +307,7 @@ async function 简要题面() {
 
     function decodeHTMLEntities(text) {
         var entities = {
+            '&lt;': '<',
             'lt': '<',
             'gt': '>',
             'amp': '&',
@@ -316,7 +317,9 @@ async function 简要题面() {
             // 添加其他实体
         };
 
+        console.log(text);
         for (let i in entities) text = text.replace(i, entities[i]);
+        console.log(text);
         return text;
     }
 
